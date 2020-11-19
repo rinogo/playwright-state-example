@@ -1,0 +1,18 @@
+<html>
+  <body>
+    <p>You have been here...</p>
+    <ul>LocalStorage: <span id="local-storage">(Error)</span> time(s).</ul>
+
+    <script type="javascript">
+      var numTimes = localStorage.getItem("numTimes");
+      if(numTimes == null) {
+        numTimes = 0;
+      } else {
+        numTimes = parseInt(numTimes, 10);
+      }
+      numTimes++;
+      localStorage.setItem("numTimes", (numTimes).toString(10))
+      document.getElementById("local-storage").textContent = numTimes.toString(10);
+    </script>
+  </body>
+</html>
