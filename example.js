@@ -1,4 +1,5 @@
 const { chromium } = require("./playwright");
+const { stat } = require("fs");
 const fs = require("fs").promises;
 
 (async () => {
@@ -29,23 +30,65 @@ const saveState = async (context, path = "savedState", merge = true) =>  {
 
   //Merge `state` into `oldState` (the state currently stored at `path`).
   if(merge) {
+    //Load state again (important in case it has changed on disk since we last loaded it)
     let oldState = await loadState(path);
-    console.log(JSON.stringify(oldState));
+
     newState = {
-      cookies: [
-        ...(oldState.cookies || []),
-        ...state.cookies
-      ],
-      origins: [
-        ...(oldState.origins || []),
-        ...state.origins
-      ]
+      cookies: uniqBy([
+        ...state.cookies,
+        ...(oldState.cookies || [])
+      ], (o) => o["domain"] + ":" + o["name"] ),
+      origins: mergeLocalStorage([
+        ...state.origins,
+        ...(oldState.origins || [])
+      ])
     };
   } else {
     newState = state;
   }
 
-  console.log(JSON.stringify(newState, null, 2));
+  let newStateJson = JSON.stringify(newState, null, 2);
 
-  await fs.writeFile(path, JSON.stringify(newState), "utf8");
+  // console.log("\nnewState:");
+  // console.log(newStateJson);
+
+  await fs.writeFile(path, newStateJson, "utf8");
+}
+
+//uniqBy() from https://stackoverflow.com/a/40808569/114558
+//NOTE: In the case of duplicates, the object that is encountered first is retained. (This differs from usage of the spread operator on primitives, in which the last-specified primitive is retained)
+const uniqBy = (arr, predicate) => {
+  const cb = typeof predicate === 'function' ? predicate : (o) => o[predicate];
+  
+  return [...arr.reduce((map, item) => {
+    const key = (item === null || item === undefined) ? 
+      item : cb(item);
+    
+    map.has(key) || map.set(key, item);
+    
+    return map;
+  }, new Map()).values()];
+};
+
+const mergeLocalStorage = (originsParam) => {
+  let originsByUrl = {};
+  for(let i = 0; i < originsParam.length; i++) {
+    let obj = originsParam[i];
+    if(!originsByUrl[obj.origin]) {
+      originsByUrl[obj.origin] = [];
+    }
+
+    originsByUrl[obj.origin].push(...obj.localStorage);
+  }
+
+  let r = [];
+  for(const [url, origins] of Object.entries(originsByUrl)) {
+    originsByUrl[url] = uniqBy(origins, "name");
+    r.push({
+      origin: url,
+      localStorage: originsByUrl[url]
+    })
+  }
+
+  return r;
 }
