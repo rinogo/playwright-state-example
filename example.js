@@ -7,7 +7,7 @@ const fs = require("fs").promises;
   const context = await browser.newContext({ storageState: await loadState() }); //Create a new context from the saved state.
   const page = await context.newPage();
   await page.goto("https://raw.githack.com/rinogo/playwright-state-example/main/example.html");
-  await page.screenshot({ path: "example.png" });
+  console.log(await (await page.$("body")).innerText());
   await saveState(context); //Save the updated state
   await browser.close();
 })();
