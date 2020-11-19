@@ -13,6 +13,7 @@
       numTimes++;
       localStorage.setItem("numTimes", (numTimes).toString(10))
       document.getElementById("local-storage").textContent = numTimes.toString(10);
+      localStorage.setItem("lastAccessed", Date.now().toString(10))
     </script>
   </body>
 </html>
