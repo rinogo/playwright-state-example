@@ -1,5 +1,4 @@
 const { chromium } = require("./playwright");
-const { stat } = require("fs");
 const fs = require("fs").promises;
 
 (async () => {
