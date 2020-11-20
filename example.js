@@ -28,6 +28,7 @@ const loadState = async (path = "savedState") =>  {
 //NOTE: This function is a bit "racy". There's a chance of losing any changes that are made between the time that the state is reloaded and saved back. Also, there may be concurrency issues when multiple Playwright scripts are consistently modifying the same state values. If this is a problem, a better storage solution (as opposed to a flat file) might be warranted.
 const saveState = async (context, path = "savedState", merge = true) =>  {
   let state = await context.storageState();
+  let newState;
 
   //Merge `state` into `oldState` (the state currently stored at `path`).
   if(merge) {
@@ -46,6 +47,13 @@ const saveState = async (context, path = "savedState", merge = true) =>  {
     };
   } else {
     newState = state;
+  }
+
+  if(Object.keys(newState.cookies).length === 0) {
+    delete newState.cookies;
+  }
+  if(Object.keys(newState.origins).length === 0) {
+    delete newState.origins;
   }
 
   let newStateJson = JSON.stringify(newState, null, 2);
