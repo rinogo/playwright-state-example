@@ -25,6 +25,7 @@ const loadState = async (path = "savedState") =>  {
 }
 
 //Save the state of `context` to `path`. If `merge` is true, the new state will be merged into any pre-existing state.
+//NOTE: This function is a bit "racy". There's a chance of losing any changes that are made between the time that the state is reloaded and saved back.
 const saveState = async (context, path = "savedState", merge = true) =>  {
   let state = await context.storageState();
 
