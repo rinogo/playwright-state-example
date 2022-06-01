@@ -2,6 +2,9 @@
 
 This example shows how to use Playwright's new [`browserContext.storageState()`](https://playwright.dev/#version=master&path=docs%2Fapi.md&q=browsercontextstoragestate) and corresponding [`browser.newContext({storageState})`](https://playwright.dev/#version=master&path=docs%2Fapi.md&q=browsercontextstoragestate) functionality.
 
+## Basic state storage
+This repo is appropriate for custom/advanced state storage (e.g. state merging). If you only need basic state storage, check out the docs for [Reuse Authentication State](https://playwright.dev/docs/auth#reuse-authentication-state).
+
 ## Installation
 This example uses features that are currently only available on the `master` branch of Playwright.
 For this code to work, you must manually [install and build playwright](https://github.com/microsoft/playwright/blob/master/CONTRIBUTING.md#getting-code) in the `playwright` directory. E.g:
